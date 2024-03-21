@@ -123,11 +123,8 @@ def convert_to_densely_packed_bcd(number):
 
 
 
-def decimal_32_floating_ponint_converter():
-    # input number with exponent
-    number = float(input("Enter a number: "))
-    exponent = int(input("Enter an exponent (base-10): "))
-
+def decimal_32_floating_ponint_converter(number, exponent):
+    # input number with exponent done through
     # if the number is a normal case
     if check_number(number, exponent):
         # get sign bit
@@ -173,7 +170,7 @@ def decimal_32_floating_ponint_converter():
             print("Sliced: " + sliced)
             coefficient_cont += ' ' + convert_to_densely_packed_bcd(sliced)
         
-
+        
         return sign_bit + ' ' + combi_field + ' ' + exp_cont + ' ' + coefficient_cont
     
     # TODO: SPECIAL CASES
