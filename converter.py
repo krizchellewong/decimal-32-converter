@@ -138,6 +138,9 @@ def decimal_32_floating_ponint_converter():
         # if number is floating point
         if number % 1 != 0:
             number, exponent = normalize(number, exponent)
+        else:
+            number = int(number)
+        
 
         # TODO: check if numbber of digits > 7
         # if yes, ask for preferred rounding method
