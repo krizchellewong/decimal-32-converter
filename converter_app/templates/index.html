@@ -13,6 +13,12 @@
     <div>
         <form action="#" method="POST">
             {{ form.hidden_tag() }}
+            <legend>
+                {{ form.rounding.label }}
+            </legend>
+            {% for choice in form.rounding %}
+                <label>{{ choice.label }} {{ choice }}</label><br>
+            {% endfor %}
             {{ form.decimal_field.label }}
             {{ form.decimal_field(size=32, step="any") }}<br>
             {{ form.exponent.label }}

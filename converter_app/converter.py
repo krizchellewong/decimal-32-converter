@@ -123,7 +123,7 @@ def convert_to_densely_packed_bcd(number):
 
 
 
-def decimal_32_floating_ponint_converter(number, exponent):
+def decimal_32_floating_ponint_converter(number, exponent, rounding):
     # input number with exponent done through
     # if the number is a normal case
     if check_number(number, exponent):
