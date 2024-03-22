@@ -46,7 +46,7 @@ def rounding(length, sign_bit, number):
         if(r_type == 'C' or r_type == 'c'):
             #if number is positive
             if(sign_bit == '0'):
-                number = number/(10**excess)
+                number = int(number/(10**excess))
                 number += 1
             #if number is negative
             elif(sign_bit == '1'):
