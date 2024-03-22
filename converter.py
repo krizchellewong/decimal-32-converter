@@ -20,22 +20,32 @@ def int_to_binary(number):
     return bin(number)[2:]
 
 
-# FUNCTION: normalize number so it's whole
+# FUNCTION: normalize number so it's 7 numbers long
 def normalize(number, exponent):
     add_exp = 0
     while number >= 10 ** 7:
         number /= 10
         add_exp += 1
-    while number < 10 ** 6 and number != 0 and number % 1 != 0:
+    while number < 10 ** 6 and number != 0 and number % 1 != 0 and int(number) != 7:
         number *= 10
         add_exp -= 1
-    return int(number), exponent + add_exp
+    
+    return number, exponent + add_exp
 
 # FUNCTION: rounding
 def rounding(length, sign_bit, number):
     #calculate how many excess numbers
     excess = length - 7
     n = 1
+
+    #TEMP FIX: if number is > 7 whole digits, adjust to 7 digits w/ decimal
+    if(number % 1 == 0):
+        number = number / (10**excess)
+
+    #remove any irrelevant decimal digits
+    if((len(str(number)) - 1) != length) and (number % 1 != 0):
+        index =  length + 1
+        number = float(str(number)[:index])
 
     #loop until user inputs a valid rounding type
     while(n == 1):
@@ -46,11 +56,11 @@ def rounding(length, sign_bit, number):
         if(r_type == 'C' or r_type == 'c'):
             #if number is positive
             if(sign_bit == '0'):
-                number = int(number/(10**excess))
+                number = int(number)
                 number += 1
             #if number is negative
             elif(sign_bit == '1'):
-                number = int(number/(10**excess))
+                number = int(number)
             #break out of loop
             n = 0
 
@@ -58,17 +68,17 @@ def rounding(length, sign_bit, number):
         elif(r_type == 'F' or r_type == 'f'):
             #if number is positive
             if(sign_bit == '0'):
-                number = int(number/(10**excess))
+                number = int(number)
             #if number is negative
             elif(sign_bit == '1'):
-                number = int(number/(10**excess))
+                number = int(number)
                 number -= 1
             #break out of loop
             n = 0
 
         #Round to Zero/Truncate
         elif(r_type == 'Z' or r_type == 'z'):
-            number = int(number/(10**excess))
+            number = int(number)
             #break out of loop
             n = 0
 
@@ -216,6 +226,15 @@ def decimal_32_floating_ponint_converter():
         # get absolute value of number
         number = abs(number)
 
+        #check length of number
+        #whole or with .0
+        if(number % 1 == 0):
+            number = int(number)
+            length = len(str(number))
+        else:
+            length = len(str(number)) - 1
+
+        print(length)
         # if number is floating point
         if number % 1 != 0:
             number, exponent = normalize(number, exponent)
@@ -224,11 +243,8 @@ def decimal_32_floating_ponint_converter():
 
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
-        length = len(str(number))
-    
         if(length > 7):
             number = rounding(length, sign_bit, number)
-            print("Rounded number: " + str(number))
 
         # make number a string
         number_str = str(number)
