@@ -237,10 +237,16 @@ def main():
 
     # TODO: convert result to hex and print
     hex_val = hex_converter(result)
-    print("Hex: " + hex_val)
+    print("Hex: " + hex_val + "\n")
 
     # TODO: option to output result as a text file
-
+    choice = input("Would you like to save the result to a text file? (Y/Any key): ")
+    if choice == 'Y' or choice == 'y':
+        f = open("result.txt", "w")
+        f.write("Binary: " + result + "\n")
+        f.write("Hex: " + hex_val)
+        f.close()
+        print("Result saved to result.txt")
 
 if __name__ == "__main__":
     main()
