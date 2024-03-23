@@ -187,7 +187,7 @@ def convert_to_densely_packed_bcd(number):
     return densely_packed_bcd
 
 
-def decimal_32_floating_ponint_converter():
+def decimal_32_floating_point_converter():
     # input number with exponent
     number = float(input("Enter a number: "))
     exponent = int(input("Enter an exponent (base-10): "))
@@ -301,7 +301,7 @@ def hex_converter(bin_val):
 # MAIN
 def main():
     # TODO: loop until user wants to exit
-    result = decimal_32_floating_ponint_converter()
+    result = decimal_32_floating_point_converter()
     print("Result: " + result)
 
     # TODO: convert result to hex and print
