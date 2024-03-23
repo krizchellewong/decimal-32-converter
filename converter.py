@@ -28,15 +28,30 @@ def normalize(number, exponent):
         add_exp -= 1
     return int(number), exponent + add_exp
 
+# converts a number with > 8 digits
+def convert_to_seven_int(number, exponent):
+    #get the length of the number
+    length = len(str(number))
+    #get the number of excess digits
+    excess = length - 7
+
+    # while excess is greater than 0
+    while(excess > 0):
+        #divide the number by 10
+        number = number / 10
+        #decrement excess
+        excess -= 1
+        #decrement exponent
+        exponent += 1
+
+    return number, exponent
+
 # FUNCTION: rounding
 def rounding(length, sign_bit, number):
     #calculate how many excess numbers
     excess = length - 7
     n = 1
 
-    #TEMP FIX: if number is > 7 whole digits, adjust to 7 digits w/ decimal
-    if(number % 1 == 0):
-        number = number / (10**excess)
 
     #remove any irrelevant decimal digits
     if((len(str(number)) - 1) != length) and (number % 1 != 0):
@@ -212,6 +227,7 @@ def decimal_32_floating_point_converter():
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
         if(length > 7):
+            number, exponent = convert_to_seven_int(number, exponent)
             number = rounding(length, sign_bit, number)
 
         # make number a string
