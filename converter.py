@@ -1,6 +1,5 @@
 import math
 
-
 # FUNCTION: check if number is finite
 def check_number(number, exponent):
     # check if number is NaN
@@ -23,9 +22,9 @@ def check_if_number(number):
 # FUNCTION: get sign bit
 def get_sign_bit(number):
     if number [0] == '-':
-        return "0"
-    else:
         return "1"
+    else:
+        return "0"
 
 
 # FUNCTION: convert to binary
@@ -67,7 +66,6 @@ def rounding(length, sign_bit, number):
     excess = length - 7
     n = 1
 
-
     #remove any irrelevant decimal digits
     if((len(str(number)) - 1) != length) and (number % 1 != 0):
         index =  length + 1
@@ -83,6 +81,7 @@ def rounding(length, sign_bit, number):
             # if number is positive
             if (sign_bit == '0'):
                 number = int(number)
+                print(number)
                 number += 1
             # if number is negative
             elif (sign_bit == '1'):
@@ -100,7 +99,6 @@ def rounding(length, sign_bit, number):
                 number = int(number)
                 number -= 1
             # break out of loop
-
             n = 0
 
         # Round to Zero/Truncate
@@ -218,10 +216,12 @@ def convert_to_densely_packed_bcd(number):
 def decimal_32_floating_point_converter():
     # input number with exponent
     orig_number = str(input("Enter a number: "))
+
     try: 
         orig_exponent = int(input("Enter an exponent (base-10): "))
     except ValueError:
         print("Invalid Input. Please Try Again.")
+
     number = orig_number
     exponent = orig_exponent
 
@@ -253,7 +253,6 @@ def decimal_32_floating_point_converter():
         # get sign bit
         sign_bit = get_sign_bit(number)
 
-
         # check if number is int or float
         if '.' in number:
             # count number of chars after the .
@@ -261,19 +260,17 @@ def decimal_32_floating_point_converter():
             # convert to a whole number
             number = float(number) * 10 ** frac_count
             exponent -= frac_count
-            print("Number: " + str(number))
 
         length = len(str(number))
         number = int(number)
         # get absolute value of number
         number = abs(number)
-        
 
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
-
         if(length > 7):
             number, exponent = convert_to_seven_int(number, exponent)
+            print("Number: " + str(number))
             number = rounding(length, sign_bit, number)
 
         # make number a string
