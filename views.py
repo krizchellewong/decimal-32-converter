@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, make_response
 from flask_wtf import FlaskForm
 from wtforms import Form, FloatField, SubmitField, IntegerField, RadioField, HiddenField
-from wtforms.validators import DataRequired 
+from wtforms.validators import DataRequired, InputRequired
 from . import app   
 from .converter import decimal_32_floating_point_converter as Converter
 from .converter import hex_converter as HexConverter
@@ -51,6 +51,6 @@ class ConvertForm(FlaskForm):
                ('ties-to-even', 'Ties to even')]
 
     decimal_field = FloatField('Decimal Number', validators=[DataRequired()])
-    exponent = IntegerField('Exponent', validators=[DataRequired()])
+    exponent = IntegerField('Exponent', validators=[InputRequired()])
     rounding = RadioField('Rounding Option:', choices=choices)
     submit = SubmitField('Submit')
