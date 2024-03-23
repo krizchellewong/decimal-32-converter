@@ -7,10 +7,10 @@ def check_number(number, exponent):
 
 # FUNCTION: get sign bit
 def get_sign_bit(number):
-    if number < 0:
-        return "1"
-    else:
+    if number [0] == '-':
         return "0"
+    else:
+        return "1"
 
 
 # FUNCTION: convert to binary
@@ -199,19 +199,35 @@ def convert_to_densely_packed_bcd(number):
 
 def decimal_32_floating_point_converter():
     # input number with exponent
-    orig_number = float(input("Enter a number: "))
+    orig_number = str(input("Enter a number: "))
     orig_exponent = int(input("Enter an exponent (base-10): "))
     number = orig_number
     exponent = orig_exponent
+
+    # TODO: make sure number input is valid 
 
     # if the number is a normal case
     if check_number(number, exponent):
         # get sign bit
         sign_bit = get_sign_bit(number)
+
+
+        # check if number is int or float
+        if '.' in number:
+            # count number of chars after the .
+            frac_count = len(number.split('.')[1])
+            # convert to a whole number
+            number = float(number) * 10 ** frac_count
+            exponent -= frac_count
+            print("Number: " + str(number))
+
+        number = int(number)
         # get absolute value of number
         number = abs(number)
 
-        #check length of number
+        length = len(str(number))
+       
+        '''  #check length of number
         #whole or with .0
         if(number % 1 == 0):
             number = int(number)
@@ -223,7 +239,7 @@ def decimal_32_floating_point_converter():
         if number % 1 != 0:
             number, exponent = normalize(number, exponent)
         else:
-            number = int(number)
+            number = int(number)'''
 
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
