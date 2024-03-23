@@ -23,14 +23,10 @@ def int_to_binary(number):
 # FUNCTION: normalize number so it's 7 numbers long
 def normalize(number, exponent):
     add_exp = 0
-    while number >= 10 ** 7:
-        number /= 10
-        add_exp += 1
-    while number < 10 ** 6 and number != 0 and number % 1 != 0 and int(number) != 7:
+    while number % 1 != 0:
         number *= 10
         add_exp -= 1
-    
-    return number, exponent + add_exp
+    return int(number), exponent + add_exp
 
 # FUNCTION: rounding
 def rounding(length, sign_bit, number):
@@ -51,7 +47,7 @@ def rounding(length, sign_bit, number):
     while(n == 1):
         print(" 1. C - Ceiling\n 2. F - Floor\n 3. Z - Round to Zero\n 4. N - Round to Nearest (Ties to Even)")
         r_type = str(input("Enter rounding type: "))
-
+        
         #Ceiling
         if(r_type == 'C' or r_type == 'c'):
             #if number is positive
