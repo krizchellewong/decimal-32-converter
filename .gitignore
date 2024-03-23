@@ -1,3 +1,5 @@
 __pycache__
 .vscode
 .venv
+converter_app/__pycache__
+converter_app/.venv
