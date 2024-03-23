@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from flask_wtf import FlaskForm
-from wtforms import Form, FloatField, SubmitField, IntegerField, RadioField
+from wtforms import Form, FloatField, SubmitField, IntegerField, SelectField
 from wtforms.validators import DataRequired 
 from . import app   
 from .converter import decimal_32_floating_ponint_converter as Converter
@@ -30,5 +30,5 @@ class ConvertForm(FlaskForm):
 
     decimal_field = FloatField('Number', validators=[DataRequired()])
     exponent = IntegerField('10^', validators=[DataRequired()])
-    rounding = RadioField('Rounding Option:', choices=choices)
+    rounding = SelectField('Rounding Option:', choices=choices, validators=[DataRequired()])
     submit = SubmitField('Submit')
