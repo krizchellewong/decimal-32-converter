@@ -1,8 +1,23 @@
+import math
+
+
 # FUNCTION: check if number is finite
 def check_number(number, exponent):
-    if exponent > 90 or exponent < -101:
+    # check if number is NaN
+    if check_if_number(number):
+        # check if number is infinite or denormalized
+        if 90 >= exponent >= -101:
+            return True
+
+    return False
+
+
+def check_if_number(number):
+    try:
+        float(number)
+        return True
+    except ValueError:
         return False
-    return True
 
 
 # FUNCTION: get sign bit
@@ -28,64 +43,66 @@ def normalize(number, exponent):
         add_exp -= 1
     return int(number), exponent + add_exp
 
+
 # FUNCTION: rounding
 def rounding(length, sign_bit, number):
-    #calculate how many excess numbers
+    # calculate how many excess numbers
     excess = length - 7
     n = 1
 
-    #TEMP FIX: if number is > 7 whole digits, adjust to 7 digits w/ decimal
-    if(number % 1 == 0):
-        number = number / (10**excess)
+    # TEMP FIX: if number is > 7 whole digits, adjust to 7 digits w/ decimal
+    if (number % 1 == 0):
+        number = number / (10 ** excess)
 
-    #remove any irrelevant decimal digits
-    if((len(str(number)) - 1) != length) and (number % 1 != 0):
-        index =  length + 1
+    # remove any irrelevant decimal digits
+    if ((len(str(number)) - 1) != length) and (number % 1 != 0):
+        index = length + 1
         number = float(str(number)[:index])
 
-    #loop until user inputs a valid rounding type
-    while(n == 1):
+    # loop until user inputs a valid rounding type
+    while (n == 1):
         print(" 1. C - Ceiling\n 2. F - Floor\n 3. Z - Round to Zero\n 4. N - Round to Nearest (Ties to Even)")
         r_type = str(input("Enter rounding type: "))
-        
-        #Ceiling
-        if(r_type == 'C' or r_type == 'c'):
-            #if number is positive
-            if(sign_bit == '0'):
+
+        # Ceiling
+        if (r_type == 'C' or r_type == 'c'):
+            # if number is positive
+            if (sign_bit == '0'):
                 number = int(number)
                 number += 1
-            #if number is negative
-            elif(sign_bit == '1'):
+            # if number is negative
+            elif (sign_bit == '1'):
                 number = int(number)
-            #break out of loop
+            # break out of loop
             n = 0
 
-        #Floor
-        elif(r_type == 'F' or r_type == 'f'):
-            #if number is positive
-            if(sign_bit == '0'):
+        # Floor
+        elif (r_type == 'F' or r_type == 'f'):
+            # if number is positive
+            if (sign_bit == '0'):
                 number = int(number)
-            #if number is negative
-            elif(sign_bit == '1'):
+            # if number is negative
+            elif (sign_bit == '1'):
                 number = int(number)
                 number -= 1
-            #break out of loop
+            # break out of loop
             n = 0
 
-        #Round to Zero/Truncate
-        elif(r_type == 'Z' or r_type == 'z'):
+        # Round to Zero/Truncate
+        elif (r_type == 'Z' or r_type == 'z'):
             number = int(number)
-            #break out of loop
+            # break out of loop
             n = 0
 
-        #Round to Nearest (Ties to Even)
-        elif(r_type == 'N' or r_type == 'n'):
+        # Round to Nearest (Ties to Even)
+        elif (r_type == 'N' or r_type == 'n'):
             number = round(float(number))
             n = 0
         else:
             print("Invalid Input. Please Try Again.")
-    
+
     return number
+
 
 # FUNCTION: get e'
 def get_e_prime(exponent):
@@ -195,9 +212,9 @@ def decimal_32_floating_point_converter():
         # get absolute value of number
         number = abs(number)
 
-        #check length of number
-        #whole or with .0
-        if(number % 1 == 0):
+        # check length of number
+        # whole or with .0
+        if (number % 1 == 0):
             number = int(number)
             length = len(str(number))
         else:
@@ -211,7 +228,7 @@ def decimal_32_floating_point_converter():
 
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
-        if(length > 7):
+        if (length > 7):
             number = rounding(length, sign_bit, number)
 
         # make number a string
@@ -248,7 +265,26 @@ def decimal_32_floating_point_converter():
         return sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont
 
     else:
-        return "Number is infinite"
+        # account for NaN
+        if number[:6] == "sqrt(-":
+            number = number[6:]
+            number = number[:-1]
+            return "1 " + "11111" + " " + "0000000000 0000000000"
+        # account for sqrt
+        elif number[:5] == "sqrt(":
+            number = number[5:]
+            number = number[:-1]
+            number = float(number)
+            number = math.sqrt(number)
+            # this needs to be tweaked so the number can be ran through the normal case
+            decimal_32_floating_point_converter(number, exponent)
+        # account for infinity
+        elif exponent > 90:
+            return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
+        # account for idk what this case is, denormalized maybe or the 0 case?
+        elif exponent < -101:
+            return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
+
 
 
 def hex_converter(bin_val):
@@ -312,6 +348,7 @@ def main():
         f.write("Hex: " + hex_val)
         f.close()
         print("Result saved to result.txt")
+
 
 if __name__ == "__main__":
     main()
