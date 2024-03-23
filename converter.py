@@ -80,9 +80,7 @@ def rounding(length, sign_bit, number):
         if (r_type == 'C' or r_type == 'c'):
             # if number is positive
             if (sign_bit == '0'):
-                number = int(number)
-                print(number)
-                number += 1
+                number = math.ceil(number)
             # if number is negative
             elif (sign_bit == '1'):
                 number = int(number)
@@ -96,8 +94,7 @@ def rounding(length, sign_bit, number):
                 number = int(number)
             # if number is negative
             elif (sign_bit == '1'):
-                number = int(number)
-                number -= 1
+                number = math.ceil(number)
             # break out of loop
             n = 0
 
@@ -270,7 +267,6 @@ def decimal_32_floating_point_converter():
         # if yes, ask for preferred rounding method
         if(length > 7):
             number, exponent = convert_to_seven_int(number, exponent)
-            print("Number: " + str(number))
             number = rounding(length, sign_bit, number)
 
         # make number a string
@@ -278,7 +274,12 @@ def decimal_32_floating_point_converter():
 
         # pad 0s until there are 7 whole digits
         number_str = number_str.zfill(7)
-        print("Normalized number: " + number_str)
+
+        if sign_bit == '1':
+            print("Normalized number: -" + number_str)
+        else:
+            print("Normalized number: " + number_str)
+
         print("Exponent: " + str(exponent))
 
         # get most significant digit
