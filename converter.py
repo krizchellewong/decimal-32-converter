@@ -1,5 +1,6 @@
 import math
 
+
 # FUNCTION: check if number is finite
 def check_number(number, exponent):
     # check if number is NaN
@@ -58,60 +59,65 @@ def convert_to_seven_int(number, exponent):
         #decrement exponent
         exponent += 1
 
+    print(f"SEVEN-DIGIT NUMBER: {number}")
     return number, exponent
 
 # FUNCTION: rounding
-def rounding(length, sign_bit, number):
+def rounding(length, sign_bit, number, rounding_choice):
     # calculate how many excess numbers
     excess = length - 7
     n = 1
+
+    if rounding_choice == 'round-up':
+        r_type = 'C'
+    elif rounding_choice == 'round-down':
+        r_type = 'F'
+    elif rounding_choice == 'truncate':
+        r_type = 'T'
+    elif rounding_choice == 'ties-to-even':
+        r_type = 'E'
+    else:
+        return 0
 
     #remove any irrelevant decimal digits
     if((len(str(number)) - 1) != length) and (number % 1 != 0):
         index =  length + 1
         number = float(str(number)[:index])
 
-    # loop until user inputs a valid rounding type
-    while (n == 1):
-        print(" 1. C - Ceiling\n 2. F - Floor\n 3. Z - Round to Zero\n 4. N - Round to Nearest (Ties to Even)")
-        r_type = str(input("Enter rounding type: "))
 
-        # Ceiling
-        if (r_type == 'C' or r_type == 'c'):
-            # if number is positive
-            if (sign_bit == '0'):
-                number = math.ceil(number)
-            # if number is negative
-            elif (sign_bit == '1'):
-                number = int(number)
-            # break out of loop
-            n = 0
-
-        # Floor
-        elif (r_type == 'F' or r_type == 'f'):
-            # if number is positive
-            if (sign_bit == '0'):
-                number = int(number)
-            # if number is negative
-            elif (sign_bit == '1'):
-                number = math.ceil(number)
-            # break out of loop
-            n = 0
-
-        # Round to Zero/Truncate
-        elif (r_type == 'Z' or r_type == 'z'):
+    if (r_type == 'C' or r_type == 'c'):
+        # if number is positive
+        if (sign_bit == '0'):
+            number = math.ceil(number)
+        # if number is negative
+        elif (sign_bit == '1'):
             number = int(number)
-            # break out of loop
-            n = 0
+        return number
 
-        # Round to Nearest (Ties to Even)
-        elif (r_type == 'N' or r_type == 'n'):
-            number = round(float(number))
-            n = 0
-        else:
-            print("Invalid Input. Please Try Again.")
+    # Floor
+    elif (r_type == 'F' or r_type == 'f'):
+        # if number is positive
+        if (sign_bit == '0'):
+            number = int(number)
+        # if number is negative
+        elif (sign_bit == '1'):
+            number = math.ceil(number)
 
-    return number
+        return number
+
+    # Round to Zero/Truncate
+    elif (r_type == 'Z' or r_type == 'z'):
+        number = int(number)
+        return number
+
+    # Round to Nearest (Ties to Even)
+    elif (r_type == 'E' or r_type == 'E'):
+        number = round(float(number))
+        print(f"NUMBER AFTER ROUNDING: {number}")
+        return number
+    else:
+        print("Invalid Input. Please Try Again.")
+        return 0
 
 
 # FUNCTION: get e'
@@ -210,45 +216,25 @@ def convert_to_densely_packed_bcd(number):
     return densely_packed_bcd
 
 
-def decimal_32_floating_point_converter():
-    # input number with exponent
-    orig_number = str(input("Enter a number: "))
+def decimal_32_floating_point_converter(orig_number, orig_exponent, rounding_choice):
 
-    try: 
-        orig_exponent = int(input("Enter an exponent (base-10): "))
-    except ValueError:
-        print("Invalid Input. Please Try Again.")
+    print(f"INPUT || ORIG: {orig_number}, ORIG EXP: {orig_exponent}, ROUND CHOICE: {rounding_choice}")
 
-    number = orig_number
-    exponent = orig_exponent
+    number = str(orig_number)
+    exponent = int(orig_exponent)
 
     # TODO: make sure number input is valid 
     if not check_if_number(number) or not check_number(number, exponent):
         # TODO: transfer to a separate function
-        # account for NaN
-        if number[:6] == "sqrt(-":
-            number = number[6:]
-            number = number[:-1]
-            return "1 " + "11111" + " " + "0000000000 0000000000"
-        # account for sqrt
-        elif number[:5] == "sqrt(":
-            number = number[5:]
-            number = number[:-1]
-            number = float(number)
-            number = math.sqrt(number)
-            # this needs to be tweaked so the number can be ran through the normal case
-            decimal_32_floating_point_converter(number, exponent)
-        # account for infinity
-        elif exponent > 90:
-            return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
-        # account for denormalized or the 0 case?
-        elif exponent < -101:
-            return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
+        # TODO: FORM VALIDATION?
+
+        return special_cases(number, exponent), orig_number, orig_exponent
 
     # if the number is a normal case
     elif check_number(number, exponent):
         # get sign bit
         sign_bit = get_sign_bit(number)
+
 
         # check if number is int or float
         if '.' in number:
@@ -257,29 +243,32 @@ def decimal_32_floating_point_converter():
             # convert to a whole number
             number = float(number) * 10 ** frac_count
             exponent -= frac_count
+            print("Number: " + str(number))
 
         length = len(str(number))
         number = int(number)
         # get absolute value of number
         number = abs(number)
+        
 
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
+
         if(length > 7):
             number, exponent = convert_to_seven_int(number, exponent)
-            number = rounding(length, sign_bit, number)
-
+            number = rounding(length, sign_bit, number, rounding_choice)
+        
         # make number a string
         number_str = str(number)
 
+        print(f"NUMBER_STR: {number_str}")
+
         # pad 0s until there are 7 whole digits
         number_str = number_str.zfill(7)
-
         if sign_bit == '1':
             print("Normalized number: -" + number_str)
         else:
             print("Normalized number: " + number_str)
-
         print("Exponent: " + str(exponent))
 
         # get most significant digit
@@ -305,6 +294,7 @@ def decimal_32_floating_point_converter():
             print("Sliced: " + sliced)
             coefficient_cont += ' ' + convert_to_densely_packed_bcd(sliced)
 
+        print(f"RESULT: {(sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont)} | ORIG NUMBER: {orig_number}, | ORIG EXPONENT: {orig_exponent}")
         return (sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont), orig_number, orig_exponent
 
 
@@ -354,6 +344,16 @@ def hex_converter(bin_val):
     return hex_val
 
 
+def special_cases(number, exponent):
+    # Infinity special case: if exponent is greater than 90.
+    if exponent > 90:
+        return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
+    # Denormalized special case: if exponent is less than -101.
+    elif exponent < -101:
+        return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
+    elif not (check_if_number(number)):
+        return "Invalid Input"
+
 # MAIN
 def main():
     # TODO: loop until user wants to exit
@@ -362,19 +362,8 @@ def main():
 
     # TODO: convert result to hex and print
     hex_val = hex_converter(result[0])
-    print("Hex: " + hex_val + "\n")
-
-    # TODO: option to output result as a text file
-    choice = input("Would you like to save the result to a text file? (Y/Any key): ")
-    if choice == 'Y' or choice == 'y':
-        f = open("result.txt", "w")
-        f.write("Input: " + str(result[1]) + " x 10^" + str(result[2]) + "\n")
-        f.write("Binary: " + result[0] + "\n")
-        f.write("Hex: " + hex_val)
-        f.close()
-        print("Result saved to result.txt")
+    print("Hex: 0x" + hex_val + "\n")
 
 
 if __name__ == "__main__":
     main()
-
