@@ -218,14 +218,38 @@ def convert_to_densely_packed_bcd(number):
 def decimal_32_floating_point_converter():
     # input number with exponent
     orig_number = str(input("Enter a number: "))
-    orig_exponent = int(input("Enter an exponent (base-10): "))
+    try: 
+        orig_exponent = int(input("Enter an exponent (base-10): "))
+    except ValueError:
+        print("Invalid Input. Please Try Again.")
     number = orig_number
     exponent = orig_exponent
 
     # TODO: make sure number input is valid 
+    if not check_if_number(number) or not check_number(number, exponent):
+        # TODO: transfer to a separate function
+        # account for NaN
+        if number[:6] == "sqrt(-":
+            number = number[6:]
+            number = number[:-1]
+            return "1 " + "11111" + " " + "0000000000 0000000000"
+        # account for sqrt
+        elif number[:5] == "sqrt(":
+            number = number[5:]
+            number = number[:-1]
+            number = float(number)
+            number = math.sqrt(number)
+            # this needs to be tweaked so the number can be ran through the normal case
+            decimal_32_floating_point_converter(number, exponent)
+        # account for infinity
+        elif exponent > 90:
+            return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
+        # account for denormalized or the 0 case?
+        elif exponent < -101:
+            return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
 
     # if the number is a normal case
-    if check_number(number, exponent):
+    elif check_number(number, exponent):
         # get sign bit
         sign_bit = get_sign_bit(number)
 
@@ -239,10 +263,11 @@ def decimal_32_floating_point_converter():
             exponent -= frac_count
             print("Number: " + str(number))
 
+        length = len(str(number))
         number = int(number)
         # get absolute value of number
         number = abs(number)
-
+        
 
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
@@ -284,26 +309,7 @@ def decimal_32_floating_point_converter():
 
         return (sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont), orig_number, orig_exponent
 
-    else:
-        # account for NaN
-        if number[:6] == "sqrt(-":
-            number = number[6:]
-            number = number[:-1]
-            return "1 " + "11111" + " " + "0000000000 0000000000"
-        # account for sqrt
-        elif number[:5] == "sqrt(":
-            number = number[5:]
-            number = number[:-1]
-            number = float(number)
-            number = math.sqrt(number)
-            # this needs to be tweaked so the number can be ran through the normal case
-            decimal_32_floating_point_converter(number, exponent)
-        # account for infinity
-        elif exponent > 90:
-            return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
-        # account for idk what this case is, denormalized maybe or the 0 case?
-        elif exponent < -101:
-            return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
+
 
 
 
