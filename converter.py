@@ -200,8 +200,10 @@ def convert_to_densely_packed_bcd(number):
 
 def decimal_32_floating_point_converter():
     # input number with exponent
-    number = float(input("Enter a number: "))
-    exponent = int(input("Enter an exponent (base-10): "))
+    orig_number = float(input("Enter a number: "))
+    orig_exponent = int(input("Enter an exponent (base-10): "))
+    number = orig_number
+    exponent = orig_exponent
 
     # if the number is a normal case
     if check_number(number, exponent):
@@ -209,6 +211,7 @@ def decimal_32_floating_point_converter():
         sign_bit = get_sign_bit(number)
         # get absolute value of number
         number = abs(number)
+
 
         #check length of number
         #whole or with .0
@@ -324,6 +327,7 @@ def main():
     choice = input("Would you like to save the result to a text file? (Y/Any key): ")
     if choice == 'Y' or choice == 'y':
         f = open("result.txt", "w")
+        f.write("Number: " + orig_number + "x 10 ^ " + orig_exponent + "\n")
         f.write("Binary: " + result + "\n")
         f.write("Hex: " + hex_val)
         f.close()
