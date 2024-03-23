@@ -84,35 +84,8 @@ def rounding(length, sign_bit, number):
 
         #Round to Nearest (Ties to Even)
         elif(r_type == 'N' or r_type == 'n'):
-            #if number is positive
-           ''' if(sign_bit == '0'):
-                #if last digit is greater than 5
-                if(number[-1] > 5):
-                    number = int(number/(10**excess))
-                    number += 1
-                #if last digit is less than 5
-                elif(number[-1] < 5):
-                    number = int(number/(10**excess))
-                #if last digit is 5
-                elif(number[-1] == 5):
-                    number = int(number/(10**excess))
-                #break out of loop
-                n = 0
-            
-            #if number is negative
-            if(sign_bit == '1'):
-                #if last digit is greater than 5
-                if(number[-1] > 5):
-                    number = int(number/10)
-                    number -= 1
-                #if last digit is less than 5
-                elif(number[-1] < 5):
-                    number = int(number/10)
-                #if last digit is 5
-                elif(number[-1] == 5):
-                    number = int(number/10)   
-                #break out of loop
-                n = 0     '''
+            number = round(float(number))
+            n = 0
         else:
             print("Invalid Input. Please Try Again.")
     
@@ -234,7 +207,6 @@ def decimal_32_floating_ponint_converter():
         else:
             length = len(str(number)) - 1
 
-        print(length)
         # if number is floating point
         if number % 1 != 0:
             number, exponent = normalize(number, exponent)
