@@ -262,7 +262,7 @@ def decimal_32_floating_point_converter():
             print("Sliced: " + sliced)
             coefficient_cont += ' ' + convert_to_densely_packed_bcd(sliced)
 
-        return sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont
+        return (sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont), orig_number, orig_exponent
 
     else:
         return "Number is infinite"
@@ -315,18 +315,18 @@ def hex_converter(bin_val):
 def main():
     # TODO: loop until user wants to exit
     result = decimal_32_floating_point_converter()
-    print("Result: " + result)
+    print("Result: " + result[0])
 
     # TODO: convert result to hex and print
-    hex_val = hex_converter(result)
+    hex_val = hex_converter(result[0])
     print("Hex: " + hex_val + "\n")
 
     # TODO: option to output result as a text file
     choice = input("Would you like to save the result to a text file? (Y/Any key): ")
     if choice == 'Y' or choice == 'y':
         f = open("result.txt", "w")
-        f.write("Input: " + orig_number + "x 10 ^ " + orig_exponent + "\n")
-        f.write("Binary: " + result + "\n")
+        f.write("Input: " + str(result[1]) + " x 10^" + str(result[2]) + "\n")
+        f.write("Binary: " + result[0] + "\n")
         f.write("Hex: " + hex_val)
         f.close()
         print("Result saved to result.txt")
