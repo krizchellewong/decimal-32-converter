@@ -24,44 +24,32 @@
             }
         }
     </script>
+
+    
 </head>
 <body class="main bg-champagne">
     <div class="flex flex-col gap-y-5 bg-white shadow-xl rounded-xl p-10">
         <div class="title">
             <h1 class="text-3xl font-bold">Decimal to Single-Precision Floating Point Converter</h1>
         </div>
-        <!--
-        <form action="#" method="POST" class="flex flex-col gap-y-2">
+        
+        <form action="#" method="POST" class="flex flex-col gap-y-1">
             {{ form.hidden_tag() }}
-
-            {{ form.rounding.label }}
-            {{ form.rounding(class='border-2 rounded-lg p-3')}}<br>
+            <legend>
+                {{ form.rounding.label }}
+            </legend>
+            {% for choice in form.rounding %}
+                <label>{{ choice.label }} {{ choice }}</label><br>
+            {% endfor %}
             {{ form.decimal_field.label }}
             {{ form.decimal_field(size=32, step="any", class='border-2 rounded-lg p-2') }}<br>
             {{ form.exponent.label }}
-            {{ form.exponent(size=32, step="any", class='border-2 rounded-lg p-2') }}<br>
-            <div class="text-center border-champagne shadow-lg rounded-lg hover:bg-dark-blue hover:text-white">
+            {{ form.exponent(size=32, step="any", class='border-2 rounded-lg p-2')}}<br>
 
-                {{ form.submit() }}
-            </div>
+            {{ form.submit(class='border-2 rounded-lg p-2 hover:bg-dark-blue hover:text-white') }}
         </form>
-    -->
-    <form action="#" method="POST">
-        {{ form.hidden_tag() }}
-        <legend>
-            {{ form.rounding.label }}
-        </legend>
-        {% for choice in form.rounding %}
-            <label>{{ choice.label }} {{ choice }}</label><br>
-        {% endfor %}
-        {{ form.decimal_field.label }}
-        {{ form.decimal_field(size=32, step="any", class='border-2 rounded-lg p-2') }}<br>
-        {{ form.exponent.label }}
-        {{ form.exponent(size=32, step="any", class='border-2 rounded-lg p-2')}}<br>
-
-            {{ form.submit(class='border-2 rounded-lg p-2') }}
-    </form>
-        <div>
+        {% if binary_conversion %}
+        <div class="flex flex-col">
             <h1 class="text-2xl font-bold"> Result </h2>
             <div>
                 CONVERTED NUMBER: {{ binary_conversion }}
@@ -71,6 +59,13 @@
             </div>
             <!--  TODO: INSERT Export Feature -->
         </div>
+        <div class="flex flex-col gap-y-1">
+            <h1 class="text-2xl font-bold text-center"> Export </h1>
+            <!-- Button to trigger file download -->
+            <a href="{{ url_for('download_file', decimal_number=decimal_number, exponent=exponent, binary_conversion=binary_conversion, hex=hex) }}" class="border-2 rounded-lg p-2 hover:bg-dark-blue hover:text-white">Download Results</a>
+        </div>
+        
+        {% endif %}
     </div>
 </body>
 </html>
