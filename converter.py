@@ -22,10 +22,10 @@ def check_if_number(number):
 
 # FUNCTION: get sign bit
 def get_sign_bit(number):
-    if number < 0:
-        return "1"
-    else:
+    if number [0] == '-':
         return "0"
+    else:
+        return "1"
 
 
 # FUNCTION: convert to binary
@@ -43,6 +43,23 @@ def normalize(number, exponent):
         add_exp -= 1
     return int(number), exponent + add_exp
 
+# converts a number with > 8 digits
+def convert_to_seven_int(number, exponent):
+    #get the length of the number
+    length = len(str(number))
+    #get the number of excess digits
+    excess = length - 7
+
+    # while excess is greater than 0
+    while(excess > 0):
+        #divide the number by 10
+        number = number / 10
+        #decrement excess
+        excess -= 1
+        #decrement exponent
+        exponent += 1
+
+    return number, exponent
 
 # FUNCTION: rounding
 def rounding(length, sign_bit, number):
@@ -50,13 +67,10 @@ def rounding(length, sign_bit, number):
     excess = length - 7
     n = 1
 
-    # TEMP FIX: if number is > 7 whole digits, adjust to 7 digits w/ decimal
-    if (number % 1 == 0):
-        number = number / (10 ** excess)
 
-    # remove any irrelevant decimal digits
-    if ((len(str(number)) - 1) != length) and (number % 1 != 0):
-        index = length + 1
+    #remove any irrelevant decimal digits
+    if((len(str(number)) - 1) != length) and (number % 1 != 0):
+        index =  length + 1
         number = float(str(number)[:index])
 
     # loop until user inputs a valid rounding type
@@ -86,6 +100,7 @@ def rounding(length, sign_bit, number):
                 number = int(number)
                 number -= 1
             # break out of loop
+
             n = 0
 
         # Round to Zero/Truncate
@@ -202,33 +217,38 @@ def convert_to_densely_packed_bcd(number):
 
 def decimal_32_floating_point_converter():
     # input number with exponent
-    number = float(input("Enter a number: "))
-    exponent = int(input("Enter an exponent (base-10): "))
+    orig_number = str(input("Enter a number: "))
+    orig_exponent = int(input("Enter an exponent (base-10): "))
+    number = orig_number
+    exponent = orig_exponent
+
+    # TODO: make sure number input is valid 
 
     # if the number is a normal case
     if check_number(number, exponent):
         # get sign bit
         sign_bit = get_sign_bit(number)
+
+
+        # check if number is int or float
+        if '.' in number:
+            # count number of chars after the .
+            frac_count = len(number.split('.')[1])
+            # convert to a whole number
+            number = float(number) * 10 ** frac_count
+            exponent -= frac_count
+            print("Number: " + str(number))
+
+        number = int(number)
         # get absolute value of number
         number = abs(number)
 
-        # check length of number
-        # whole or with .0
-        if (number % 1 == 0):
-            number = int(number)
-            length = len(str(number))
-        else:
-            length = len(str(number)) - 1
-
-        # if number is floating point
-        if number % 1 != 0:
-            number, exponent = normalize(number, exponent)
-        else:
-            number = int(number)
 
         # TODO: check if number of digits > 7
         # if yes, ask for preferred rounding method
-        if (length > 7):
+
+        if(length > 7):
+            number, exponent = convert_to_seven_int(number, exponent)
             number = rounding(length, sign_bit, number)
 
         # make number a string
@@ -262,7 +282,7 @@ def decimal_32_floating_point_converter():
             print("Sliced: " + sliced)
             coefficient_cont += ' ' + convert_to_densely_packed_bcd(sliced)
 
-        return sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont
+        return (sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont), orig_number, orig_exponent
 
     else:
         # account for NaN
@@ -334,17 +354,18 @@ def hex_converter(bin_val):
 def main():
     # TODO: loop until user wants to exit
     result = decimal_32_floating_point_converter()
-    print("Result: " + result)
+    print("Result: " + result[0])
 
     # TODO: convert result to hex and print
-    hex_val = hex_converter(result)
+    hex_val = hex_converter(result[0])
     print("Hex: " + hex_val + "\n")
 
     # TODO: option to output result as a text file
     choice = input("Would you like to save the result to a text file? (Y/Any key): ")
     if choice == 'Y' or choice == 'y':
         f = open("result.txt", "w")
-        f.write("Binary: " + result + "\n")
+        f.write("Input: " + str(result[1]) + " x 10^" + str(result[2]) + "\n")
+        f.write("Binary: " + result[0] + "\n")
         f.write("Hex: " + hex_val)
         f.close()
         print("Result saved to result.txt")
