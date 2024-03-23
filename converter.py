@@ -52,7 +52,6 @@ def rounding(length, sign_bit, number):
     excess = length - 7
     n = 1
 
-
     #remove any irrelevant decimal digits
     if((len(str(number)) - 1) != length) and (number % 1 != 0):
         index =  length + 1
@@ -83,7 +82,7 @@ def rounding(length, sign_bit, number):
             #if number is negative
             elif(sign_bit == '1'):
                 number = int(number)
-                number -= 1
+                number += 1
             #break out of loop
             n = 0
 
@@ -212,7 +211,6 @@ def decimal_32_floating_point_converter():
         # get absolute value of number
         number = abs(number)
 
-
         #check length of number
         #whole or with .0
         if(number % 1 == 0):
@@ -327,7 +325,7 @@ def main():
     choice = input("Would you like to save the result to a text file? (Y/Any key): ")
     if choice == 'Y' or choice == 'y':
         f = open("result.txt", "w")
-        f.write("Number: " + orig_number + "x 10 ^ " + orig_exponent + "\n")
+        f.write("Input: " + orig_number + "x 10 ^ " + orig_exponent + "\n")
         f.write("Binary: " + result + "\n")
         f.write("Hex: " + hex_val)
         f.close()
