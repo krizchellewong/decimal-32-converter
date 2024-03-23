@@ -347,10 +347,10 @@ def hex_converter(bin_val):
 def special_cases(number, exponent):
     # Infinity special case: if exponent is greater than 90.
     if exponent > 90:
-        return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
+        return get_sign_bit(number) + " " + "11110" + " " + "000000" + "0000000000 0000000000"
     # Denormalized special case: if exponent is less than -101.
     elif exponent < -101:
-        return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
+        return get_sign_bit(number) + " " + "01000" + " " + "100101" + "0000000000 0000000000"
     elif not (check_if_number(number)):
         return "Invalid Input"
 
