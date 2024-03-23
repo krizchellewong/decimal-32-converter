@@ -249,7 +249,7 @@ def decimal_32_floating_ponint_converter():
             print("Sliced: " + sliced)
             coefficient_cont += ' ' + convert_to_densely_packed_bcd(sliced)
 
-        return sign_bit + ' ' + combi_field + ' ' + exp_cont + ' ' + coefficient_cont
+        return sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont
 
     else:
         return "Number is infinite"
