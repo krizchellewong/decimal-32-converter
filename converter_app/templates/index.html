@@ -30,6 +30,7 @@
         <div class="title">
             <h1 class="text-3xl font-bold">Decimal to Single-Precision Floating Point Converter</h1>
         </div>
+        <!--
         <form action="#" method="POST" class="flex flex-col gap-y-2">
             {{ form.hidden_tag() }}
 
@@ -44,10 +45,31 @@
                 {{ form.submit() }}
             </div>
         </form>
+    -->
+    <form action="#" method="POST">
+        {{ form.hidden_tag() }}
+        <legend>
+            {{ form.rounding.label }}
+        </legend>
+        {% for choice in form.rounding %}
+            <label>{{ choice.label }} {{ choice }}</label><br>
+        {% endfor %}
+        {{ form.decimal_field.label }}
+        {{ form.decimal_field(size=32, step="any", class='border-2 rounded-lg p-2') }}<br>
+        {{ form.exponent.label }}
+        {{ form.exponent(size=32, step="any", class='border-2 rounded-lg p-2')}}<br>
+
+            {{ form.submit(class='border-2 rounded-lg p-2') }}
+    </form>
         <div>
             <h1 class="text-2xl font-bold"> Result </h2>
-            NUMBER POSTED: {{ number }}
-                <!-- Form that accepts -->
+            <div>
+                CONVERTED NUMBER: {{ binary_conversion }}
+            </div>
+            <div>
+                HEX VERSION: {{hex}}
+            </div>
+            <!--  TODO: INSERT Export Feature -->
         </div>
     </div>
 </body>

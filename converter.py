@@ -23,9 +23,9 @@ def check_if_number(number):
 # FUNCTION: get sign bit
 def get_sign_bit(number):
     if number [0] == '-':
-        return "1"
-    else:
         return "0"
+    else:
+        return "1"
 
 
 # FUNCTION: convert to binary
@@ -59,65 +59,64 @@ def convert_to_seven_int(number, exponent):
         #decrement exponent
         exponent += 1
 
-    print(f"SEVEN-DIGIT NUMBER: {number}")
     return number, exponent
 
 # FUNCTION: rounding
-def rounding(length, sign_bit, number, rounding_choice):
+def rounding(length, sign_bit, number):
     # calculate how many excess numbers
     excess = length - 7
     n = 1
 
-    if rounding_choice == 'round-up':
-        r_type = 'C'
-    elif rounding_choice == 'round-down':
-        r_type = 'F'
-    elif rounding_choice == 'truncate':
-        r_type = 'T'
-    elif rounding_choice == 'ties-to-even':
-        r_type = 'E'
-    else:
-        return 0
 
     #remove any irrelevant decimal digits
     if((len(str(number)) - 1) != length) and (number % 1 != 0):
         index =  length + 1
         number = float(str(number)[:index])
 
+    # loop until user inputs a valid rounding type
+    while (n == 1):
+        print(" 1. C - Ceiling\n 2. F - Floor\n 3. Z - Round to Zero\n 4. N - Round to Nearest (Ties to Even)")
+        r_type = str(input("Enter rounding type: "))
 
-    if (r_type == 'C' or r_type == 'c'):
-        # if number is positive
-        if (sign_bit == '0'):
-            number = math.ceil(number)
-        # if number is negative
-        elif (sign_bit == '1'):
+        # Ceiling
+        if (r_type == 'C' or r_type == 'c'):
+            # if number is positive
+            if (sign_bit == '0'):
+                number = int(number)
+                number += 1
+            # if number is negative
+            elif (sign_bit == '1'):
+                number = int(number)
+            # break out of loop
+            n = 0
+
+        # Floor
+        elif (r_type == 'F' or r_type == 'f'):
+            # if number is positive
+            if (sign_bit == '0'):
+                number = int(number)
+            # if number is negative
+            elif (sign_bit == '1'):
+                number = int(number)
+                number -= 1
+            # break out of loop
+
+            n = 0
+
+        # Round to Zero/Truncate
+        elif (r_type == 'Z' or r_type == 'z'):
             number = int(number)
-        return number
+            # break out of loop
+            n = 0
 
-    # Floor
-    elif (r_type == 'F' or r_type == 'f'):
-        # if number is positive
-        if (sign_bit == '0'):
-            number = int(number)
-        # if number is negative
-        elif (sign_bit == '1'):
-            number = math.ceil(number)
+        # Round to Nearest (Ties to Even)
+        elif (r_type == 'N' or r_type == 'n'):
+            number = round(float(number))
+            n = 0
+        else:
+            print("Invalid Input. Please Try Again.")
 
-        return number
-
-    # Round to Zero/Truncate
-    elif (r_type == 'Z' or r_type == 'z'):
-        number = int(number)
-        return number
-
-    # Round to Nearest (Ties to Even)
-    elif (r_type == 'E' or r_type == 'E'):
-        number = round(float(number))
-        print(f"NUMBER AFTER ROUNDING: {number}")
-        return number
-    else:
-        print("Invalid Input. Please Try Again.")
-        return 0
+    return number
 
 
 # FUNCTION: get e'
@@ -216,19 +215,38 @@ def convert_to_densely_packed_bcd(number):
     return densely_packed_bcd
 
 
-def decimal_32_floating_point_converter(orig_number, orig_exponent, rounding_choice):
-
-    print(f"INPUT || ORIG: {orig_number}, ORIG EXP: {orig_exponent}, ROUND CHOICE: {rounding_choice}")
-
-    number = str(orig_number)
-    exponent = int(orig_exponent)
+def decimal_32_floating_point_converter():
+    # input number with exponent
+    orig_number = str(input("Enter a number: "))
+    try: 
+        orig_exponent = int(input("Enter an exponent (base-10): "))
+    except ValueError:
+        print("Invalid Input. Please Try Again.")
+    number = orig_number
+    exponent = orig_exponent
 
     # TODO: make sure number input is valid 
     if not check_if_number(number) or not check_number(number, exponent):
         # TODO: transfer to a separate function
-        # TODO: FORM VALIDATION?
-
-        return special_cases(number, exponent), orig_number, orig_exponent
+        # account for NaN
+        if number[:6] == "sqrt(-":
+            number = number[6:]
+            number = number[:-1]
+            return "1 " + "11111" + " " + "0000000000 0000000000"
+        # account for sqrt
+        elif number[:5] == "sqrt(":
+            number = number[5:]
+            number = number[:-1]
+            number = float(number)
+            number = math.sqrt(number)
+            # this needs to be tweaked so the number can be ran through the normal case
+            decimal_32_floating_point_converter(number, exponent)
+        # account for infinity
+        elif exponent > 90:
+            return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
+        # account for denormalized or the 0 case?
+        elif exponent < -101:
+            return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
 
     # if the number is a normal case
     elif check_number(number, exponent):
@@ -256,19 +274,14 @@ def decimal_32_floating_point_converter(orig_number, orig_exponent, rounding_cho
 
         if(length > 7):
             number, exponent = convert_to_seven_int(number, exponent)
-            number = rounding(length, sign_bit, number, rounding_choice)
-        
+            number = rounding(length, sign_bit, number)
+
         # make number a string
         number_str = str(number)
 
-        print(f"NUMBER_STR: {number_str}")
-
         # pad 0s until there are 7 whole digits
         number_str = number_str.zfill(7)
-        if sign_bit == '1':
-            print("Normalized number: -" + number_str)
-        else:
-            print("Normalized number: " + number_str)
+        print("Normalized number: " + number_str)
         print("Exponent: " + str(exponent))
 
         # get most significant digit
@@ -294,7 +307,6 @@ def decimal_32_floating_point_converter(orig_number, orig_exponent, rounding_cho
             print("Sliced: " + sliced)
             coefficient_cont += ' ' + convert_to_densely_packed_bcd(sliced)
 
-        print(f"RESULT: {(sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont)} | ORIG NUMBER: {orig_number}, | ORIG EXPONENT: {orig_exponent}")
         return (sign_bit + ' ' + combi_field + ' ' + exp_cont + coefficient_cont), orig_number, orig_exponent
 
 
@@ -344,16 +356,6 @@ def hex_converter(bin_val):
     return hex_val
 
 
-def special_cases(number, exponent):
-    # Infinity special case: if exponent is greater than 90.
-    if exponent > 90:
-        return get_sign_bit(number) + " " + "11110" + " " + "0000000000 0000000000"
-    # Denormalized special case: if exponent is less than -101.
-    elif exponent < -101:
-        return get_sign_bit(number) + " " + "00000" + " " + "0000000000 0000000000"
-    elif not (check_if_number(number)):
-        return "Invalid Input"
-
 # MAIN
 def main():
     # TODO: loop until user wants to exit
@@ -362,8 +364,19 @@ def main():
 
     # TODO: convert result to hex and print
     hex_val = hex_converter(result[0])
-    print("Hex: 0x" + hex_val + "\n")
+    print("Hex: " + hex_val + "\n")
+
+    # TODO: option to output result as a text file
+    choice = input("Would you like to save the result to a text file? (Y/Any key): ")
+    if choice == 'Y' or choice == 'y':
+        f = open("result.txt", "w")
+        f.write("Input: " + str(result[1]) + " x 10^" + str(result[2]) + "\n")
+        f.write("Binary: " + result[0] + "\n")
+        f.write("Hex: " + hex_val)
+        f.close()
+        print("Result saved to result.txt")
 
 
 if __name__ == "__main__":
     main()
+
